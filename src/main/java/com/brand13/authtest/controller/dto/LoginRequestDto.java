@@ -11,12 +11,14 @@ import lombok.Setter;
 public class LoginRequestDto {
     private String username;
     private String password;
+    private String role;
     
     
     @Builder
-    public LoginRequestDto(String username, String password) {
+    public LoginRequestDto(String username, String password, String role) {
         this.username = username;
         this.password = password;
+        this.role     = role;
     }
     
     
