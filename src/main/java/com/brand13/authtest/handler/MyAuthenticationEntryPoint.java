@@ -8,7 +8,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import com.brand13.authtest.controller.dto.UnauthorizeDto;
+import com.brand13.authtest.controller.dto.StatusResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.ServletException;
@@ -33,7 +33,7 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-        UnauthorizeDto unauthorizeDto = UnauthorizeDto.builder()
+        StatusResponseDto unauthorizeDto = StatusResponseDto.builder()
                                             .statusCode(HttpStatus.UNAUTHORIZED.value())
                                             .statusMsg("Unauthouized")
                                             .msg("인증에 실패하였습니다.")

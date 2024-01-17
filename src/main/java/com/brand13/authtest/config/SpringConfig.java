@@ -1,5 +1,7 @@
 package com.brand13.authtest.config;
 
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -8,17 +10,26 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
+import com.brand13.authtest.handler.LoginSuccessHandler;
 import com.brand13.authtest.handler.MyAccessDeniedHandler;
 import com.brand13.authtest.handler.MyAuthenticationEntryPoint;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Configuration
 @EnableWebSecurity
 public class SpringConfig {
 
-    @Autowired MyAccessDeniedHandler myAccessDeniedHandler;
+    @Autowired MyAccessDeniedHandler myAccessDeniedHandler; // 인가 실패 후 작업에 대한 핸들러
     
-    @Autowired MyAuthenticationEntryPoint myAuthenticationEntryPoint;
+    @Autowired MyAuthenticationEntryPoint myAuthenticationEntryPoint; //인증 실패 후 작업에 대한 핸들러
+
+    @Autowired LoginSuccessHandler loginSuccessHandler; //인증 성공 후 작업에 대한 핸들러
     
     @Bean
     public BCryptPasswordEncoder encodePwd() {return new BCryptPasswordEncoder();}
@@ -41,11 +52,24 @@ public class SpringConfig {
                                                 .authenticationEntryPoint(myAuthenticationEntryPoint)
                                                 .accessDeniedHandler(myAccessDeniedHandler)
                 )
+                .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+                        @Override
+                        public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                            CorsConfiguration config = new CorsConfiguration();
+                            config.setAllowedOrigins(Collections.singletonList("http://localhost:8000"));
+                            config.setAllowedMethods(Collections.singletonList("*"));
+                            config.setAllowCredentials(true);
+                            config.setAllowedHeaders(Collections.singletonList("*"));
+                            config.setMaxAge(3600L); //1시간
+                            return config;
+                        }
+                    }))
                 .csrf(csrf -> 
                     csrf.disable())
                 .formLogin(form -> 
                     form
-                        .permitAll()
+                        .successHandler(loginSuccessHandler)
+                        // .permitAll()
                 )
                 .logout(logoutCustomizer -> 
                     logoutCustomizer
@@ -56,4 +80,16 @@ public class SpringConfig {
                     header.frameOptions(frameOption -> frameOption.sameOrigin())
                 ).build();
     }
+
+    // @Bean
+    // public CorsFilter corsFilter() {
+    //     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    //     CorsConfiguration config = new CorsConfiguration();
+    //     config.setAllowCredentials(true);
+    //     config.addAllowedOriginPattern("*");
+    //     config.addAllowedHeader("*");
+    //     config.addAllowedMethod("*");
+    //     source.registerCorsConfiguration("/**",config);
+    //     return new CorsFilter(source);
+    // }
 }

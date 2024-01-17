@@ -8,13 +8,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UnauthorizeDto {
+public class StatusResponseDto {
     private int statusCode;
     private String statusMsg;
     private String msg;
     
     @Builder
-    public UnauthorizeDto(int statusCode, String statusMsg, String msg) {
+    public StatusResponseDto(int statusCode, String statusMsg, String msg) {
         this.statusCode = statusCode;
         this.statusMsg = statusMsg;
         this.msg = msg;
