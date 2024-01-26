@@ -35,7 +35,7 @@ public class SpringConfig {
     public BCryptPasswordEncoder encodePwd() {return new BCryptPasswordEncoder();}
 
     @Bean
-    public SecurityFilterChain fintChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         return http
                 .authorizeHttpRequests(
