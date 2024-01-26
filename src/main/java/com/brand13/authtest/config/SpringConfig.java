@@ -52,18 +52,19 @@ public class SpringConfig {
                                                 .authenticationEntryPoint(myAuthenticationEntryPoint)
                                                 .accessDeniedHandler(myAccessDeniedHandler)
                 )
-                .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-                        @Override
-                        public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                            CorsConfiguration config = new CorsConfiguration();
-                            config.setAllowedOrigins(Collections.singletonList("http://localhost:8000"));
-                            config.setAllowedMethods(Collections.singletonList("*"));
-                            config.setAllowCredentials(true);
-                            config.setAllowedHeaders(Collections.singletonList("*"));
-                            config.setMaxAge(3600L); //1시간
-                            return config;
-                        }
-                    }))
+                // .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+                //         @Override
+                //         public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                //             CorsConfiguration config = new CorsConfiguration();
+                //             config.setAllowedOrigins(Collections.singletonList("http://localhost:8000"));
+                //             config.setAllowedMethods(Collections.singletonList("*"));
+                //             config.setAllowCredentials(true);
+                //             config.setAllowedHeaders(Collections.singletonList("*"));
+                //             config.setMaxAge(3600L); //1시간
+                //             return config;
+                //         }
+                //     }))
+                .cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> 
                     csrf.disable())
                 .formLogin(form -> 
@@ -81,15 +82,21 @@ public class SpringConfig {
                 ).build();
     }
 
-    // @Bean
-    // public CorsFilter corsFilter() {
-    //     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    //     CorsConfiguration config = new CorsConfiguration();
-    //     config.setAllowCredentials(true);
-    //     config.addAllowedOriginPattern("*");
-    //     config.addAllowedHeader("*");
-    //     config.addAllowedMethod("*");
-    //     source.registerCorsConfiguration("/**",config);
-    //     return new CorsFilter(source);
-    // }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        return new CorsConfigurationSource() {
+            @Override
+            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                CorsConfiguration config = new CorsConfiguration();
+                config.setAllowedOrigins(Collections.singletonList("http://localhost:8000"));
+                config.setAllowedMethods(Collections.singletonList("*"));
+                config.setAllowCredentials(true);
+                config.setAllowedHeaders(Collections.singletonList("*"));
+                config.setMaxAge(3600L); //1시간
+                return config;
+            }
+        };   
+    }
+
+    
 }
